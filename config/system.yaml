@@ -1,0 +1,15 @@
+system:
+  local_timezone: "Asia/Shanghai"
+  market_timezone: "America/New_York"
+
+  # Trading sessions
+  trading_sessions:
+    regular:
+      start: "09:30:00"  # ET
+      end: "16:00:00"    # ET
+    pre_market:
+      start: "04:00:00"  # ET
+      end: "09:30:00"    # ET
+    after_market:
+      start: "16:00:00"  # ET
+      end: "20:00:00"    # ET
