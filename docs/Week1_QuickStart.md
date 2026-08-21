@@ -11,10 +11,12 @@ pip install ib_insync loguru pyyaml pytest
 ### 2. IBKR 准备
 
 启动 IBKR Gateway 或 TWS：
+
 - **纸盘模拟账户**：端口 `4002`
 - **真实账户**：Gateway `4001`，TWS `7497`
 
 确保 API 连接已启用：
+
 - TWS: Configure → Global Configuration → API → Settings
 - 勾选 "Enable ActiveX and Socket Clients"
 - 勾选 "Allow connections from localhost only"
@@ -33,8 +35,9 @@ ibkr:
 ```
 
 **端口说明**：
+
 - `4002` - 纸盘 Gateway
-- `4001` - 真实账户 Gateway  
+- `4001` - 真实账户 Gateway
 - `7497` - TWS (真实账户)
 - `7496` - TWS (纸盘)
 
@@ -47,6 +50,7 @@ python week1_hello_world.py
 ```
 
 **程序行为**：
+
 1. 连接到 IBKR
 2. 显示当前持仓
 3. 订阅 AAPL 5秒K线
@@ -55,6 +59,7 @@ python week1_hello_world.py
 6. 按 Ctrl+C 停止
 
 **示例输出**：
+
 ```
 ================================================================================
 Week 1 Hello World - Trading System Starting
@@ -107,6 +112,7 @@ pytest tests/slice1/integration/test_week1_hello_world.py -v
 ```
 
 **集成测试流程**：
+
 1. 连接 IBKR
 2. 查询初始持仓
 3. 订阅 AAPL 实时数据
@@ -125,6 +131,7 @@ pytest tests/slice1/utils/test_ibkr_connection.py -v
 ```
 
 验证：
+
 - 能连接到 IBKR Gateway
 - 连接状态正确
 - 断线能自动重连
@@ -132,6 +139,7 @@ pytest tests/slice1/utils/test_ibkr_connection.py -v
 ### ✅ 2. 实时数据订阅
 
 主程序运行后应看到：
+
 ```
 Subscribed to AAPL
 [Bar 1] AAPL | Time: ... | Close: $...
@@ -140,6 +148,7 @@ Subscribed to AAPL
 ### ✅ 3. 固定买入策略
 
 每 10 个 Bar 应看到：
+
 ```
 Attempting to buy 1 share of AAPL...
 Order created: BUY 1 AAPL, ID: xxx
@@ -148,6 +157,7 @@ Order created: BUY 1 AAPL, ID: xxx
 ### ✅ 4. 基础风控
 
 如果现金不足：
+
 ```
 Available cash: $150.00, Required: $200.00
 Risk check failed, order rejected
@@ -156,6 +166,7 @@ Risk check failed, order rejected
 ### ✅ 5. 持仓查询
 
 程序启动和停止时会打印持仓：
+
 ```
 ============================================================
 Current Positions:
@@ -169,6 +180,7 @@ AAPL     | Qty:      5 | Avg: $  150.25 | Value: $   751.25 | P&L: $    1.25
 日志文件位置：`logs/trading_YYYYMMDD.log`
 
 关键日志：
+
 - 连接事件
 - 数据接收
 - 订单创建
@@ -182,6 +194,7 @@ AAPL     | Qty:      5 | Avg: $  150.25 | Value: $   751.25 | P&L: $    1.25
 **问题**：`Failed to connect to IBKR`
 
 **解决**：
+
 - 检查 Gateway/TWS 是否启动
 - 检查端口是否正确（纸盘=4002）
 - 检查 API 设置是否启用
@@ -192,12 +205,14 @@ AAPL     | Qty:      5 | Avg: $  150.25 | Value: $   751.25 | P&L: $    1.25
 **问题**：`Order rejected`
 
 **可能原因**：
+
 - 现金余额不足
 - 股票代码错误
 - 市场未开盘
 - API 权限问题
 
 **检查**：
+
 ```python
 # 在 IBKR TWS 中查看
 # Account → Account Window
@@ -209,11 +224,13 @@ AAPL     | Qty:      5 | Avg: $  150.25 | Value: $   751.25 | P&L: $    1.25
 **问题**：没有看到 Bar 数据
 
 **可能原因**：
+
 - 市场未开盘（周末或节假日）
 - 订阅失败
 - 数据权限问题
 
 **解决**：
+
 - 确认市场交易时间
 - 检查数据订阅权限
 - 使用纸盘可以 7×24 测试
@@ -223,6 +240,7 @@ AAPL     | Qty:      5 | Avg: $  150.25 | Value: $   751.25 | P&L: $    1.25
 **问题**：功能测试失败
 
 **解决**：
+
 ```bash
 # 查看详细错误
 pytest tests/slice1/utils/ -v --tb=long
@@ -266,8 +284,9 @@ quant_trading_system/
 ## 下一步
 
 Week 1 完成后，继续 Week 2 开发：
+
 1. 订单状态跟踪
-2. 持仓管理增强  
+2. 持仓管理增强
 3. PostgreSQL 存储
 4. 基础监控告警
 
@@ -276,6 +295,7 @@ Week 1 完成后，继续 Week 2 开发：
 ## 技术支持
 
 遇到问题：
+
 1. 查看日志文件 `logs/trading_*.log`
 2. 运行测试定位问题 `pytest -v`
 3. 检查 IBKR 连接状态

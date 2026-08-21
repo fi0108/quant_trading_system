@@ -12,7 +12,7 @@ from datetime import datetime, time, timedelta
 from typing import Optional, Callable
 import pytz
 
-from src.core.timezone_manager import TimezoneManager
+from core.timezone_manager import TimezoneManager
 
 
 class RestartWindow:

@@ -6,7 +6,7 @@
 import sys
 from pathlib import Path
 from loguru import logger
-from .config import config
+from config import config
 
 
 def setup_logger():

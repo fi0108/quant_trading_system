@@ -3,10 +3,10 @@
 Week 1 Hello World版本：每收到10次数据买入1股。
 """
 
-from ..common.logger import log
-from ..common.models import Bar
-from ..broker.order_manager import OrderManager
-from ..broker.risk_manager import RiskManager
+from common.logger import log
+from common.models import Bar
+from broker.order_manager import OrderManager
+from broker.risk_manager import RiskManager
 
 
 class SimpleBuyStrategy:

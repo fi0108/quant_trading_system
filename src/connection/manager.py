@@ -14,8 +14,8 @@ from datetime import datetime, timedelta
 from ib_insync import IB, util
 import yaml
 
-from .state_machine import ConnectionState, ConnectionStateMachine
-from .reconnect import ReconnectStrategy
+from state_machine import ConnectionState, ConnectionStateMachine
+from reconnect import ReconnectStrategy
 
 
 class ConnectionManager:
