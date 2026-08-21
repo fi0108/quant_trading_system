@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quant-trading-system"
+version = "0.1.0"
+description = "Quantitative trading system with IBKR integration"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    # 这里先空着，或者把 requirements.txt 里的包慢慢挪过来
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]          # 关键：告诉 setuptools 去 src 下面找包
+include = ["*"]          # 包含 broker、common 等
+
+[tool.setuptools.package-data]
+"*" = ["*.py"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]     # 让 pytest 也能找到 src 里的包
+testpaths = ["tests"]

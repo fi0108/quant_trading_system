@@ -1,6 +1,6 @@
 ibkr:
   host: "127.0.0.1"
-  port: 4001  # Gateway=4001, TWS=7497
+  port: 4002  # Gateway=4001, TWS=7497
   client_id: 1
   account: "DU123456"
   timeout: 15
