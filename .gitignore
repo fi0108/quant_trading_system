@@ -49,11 +49,7 @@ cover/
 
 # Virtual Environments
 venv/
-env/
-ENV/
-env.bak/
-venv.bak/
-.venv/
+
 
 # Environment Variables
 .env

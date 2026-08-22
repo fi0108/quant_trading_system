@@ -1,20 +1,17 @@
-import sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
 """Week 1 Hello World - 端到端集成测试
 
 验证完整流程：连接 -> 订阅 -> 策略 -> 下单
 """
 
 import time
-from src.broker.ibkr_client import IBKRClient
-from src.broker.order_manager import OrderManager
-from src.broker.risk_manager import RiskManager
-from src.broker.position_manager import PositionManager
-from src.data.realtime_feed import RealtimeDataFeed
-from src.strategy.simple_buy_strategy import SimpleBuyStrategy
-from src.common.logger import log
+
+from data.ibkr_client import IBKRClient
+from trading.order.manager import OrderManager
+from trading.risk.manager import RiskManager
+from trading.position.manager import PositionManager
+from data.realtime_feed import RealtimeDataFeed
+from strategy.examples.simple_buy import SimpleBuyStrategy
+from common.logger import log
 
 
 def test_week1_hello_world():

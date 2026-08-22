@@ -9,7 +9,7 @@ description = "Quantitative trading system with IBKR integration"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    # 这里先空着，或者把 requirements.txt 里的包慢慢挪过来
+    # 后续填充你的核心依赖，如 ib_async, pandas 等
 ]
 
 [project.optional-dependencies]
@@ -19,12 +19,18 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-where = ["src"]          # 关键：告诉 setuptools 去 src 下面找包
-include = ["*"]          # 包含 broker、common 等
-
-[tool.setuptools.package-data]
-"*" = ["*.py"]
+where = ["src"]
+include = ["*"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]     # 让 pytest 也能找到 src 里的包
+# 核心解决导包问题：自动将 src 加入 sys.path
+pythonpath = ["src"]
 testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-ra -v"
+# 忽略第三方库的弃用警告
+filterwarnings = [
+    "ignore::DeprecationWarning:eventkit.*:",
+]
