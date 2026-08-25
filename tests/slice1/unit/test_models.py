@@ -1,8 +1,9 @@
-
 """测试数据模型"""
 
 from datetime import datetime
+
 from common.models import Bar, ConnectionStatus
+
 
 def test_bar_model():
     """测试Bar数据模型"""
@@ -13,7 +14,7 @@ def test_bar_model():
         high=151.0,
         low=149.5,
         close=150.5,
-        volume=1000
+        volume=1000,
     )
 
     # 测试属性
@@ -31,24 +32,17 @@ def test_bar_model():
 
     print(f"Bar model test passed: {bar}")
 
+
 def test_connection_status():
     """测试ConnectionStatus模型"""
     # 测试已连接状态
-    status = ConnectionStatus(
-        connected=True,
-        last_connect_time=datetime.now(),
-        reconnect_attempts=0
-    )
+    status = ConnectionStatus(connected=True, last_connect_time=datetime.now(), reconnect_attempts=0)
 
     assert status.connected is True
     assert status.reconnect_attempts == 0
 
     # 测试断开状态
-    status2 = ConnectionStatus(
-        connected=False,
-        last_disconnect_time=datetime.now(),
-        reconnect_attempts=3
-    )
+    status2 = ConnectionStatus(connected=False, last_disconnect_time=datetime.now(), reconnect_attempts=3)
 
     assert status2.connected is False
     assert status2.reconnect_attempts == 3
@@ -56,17 +50,10 @@ def test_connection_status():
     print(f"ConnectionStatus test passed: {status}")
     print(f"ConnectionStatus test passed: {status2}")
 
+
 def test_bar_ohlc_logic():
     """测试Bar的OHLC逻辑"""
-    bar = Bar(
-        symbol="TEST",
-        timestamp=datetime.now(),
-        open=100.0,
-        high=105.0,
-        low=98.0,
-        close=102.0,
-        volume=5000
-    )
+    bar = Bar(symbol="TEST", timestamp=datetime.now(), open=100.0, high=105.0, low=98.0, close=102.0, volume=5000)
 
     # OHLC逻辑检查
     assert bar.low <= bar.open <= bar.high
@@ -75,7 +62,8 @@ def test_bar_ohlc_logic():
 
     print("Bar OHLC logic test passed")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     test_bar_model()
     test_connection_status()
     test_bar_ohlc_logic()

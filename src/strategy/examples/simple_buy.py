@@ -16,11 +16,7 @@ class SimpleBuyStrategy:
     """
 
     def __init__(
-        self,
-        order_manager: OrderManager,
-        risk_manager: RiskManager,
-        symbol: str = "AAPL",
-        buy_interval: int = 10
+        self, order_manager: OrderManager, risk_manager: RiskManager, symbol: str = "AAPL", buy_interval: int = 10
     ):
         """初始化策略
 
@@ -66,11 +62,7 @@ class SimpleBuyStrategy:
             return
 
         # 下单
-        order = self.order_manager.create_market_order(
-            symbol=self.symbol,
-            quantity=1,
-            action="BUY"
-        )
+        order = self.order_manager.create_market_order(symbol=self.symbol, quantity=1, action="BUY")
 
         if order:
             log.info(f"Order placed successfully: ID={order.order_id}")

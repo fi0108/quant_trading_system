@@ -1,0 +1,205 @@
+# Quantitative Trading System - Unified Configuration
+# 量化交易系统 - 统一配置文件
+
+# ============================================
+# 系统配置
+# ============================================
+system:
+  # 时区设置
+  timezone:
+    local: Asia/Shanghai
+    market: America/New_York
+
+  # 运行模式（development / production）
+  mode: development
+
+  # 日志配置
+  logging:
+    level: INFO  # DEBUG / INFO / WARNING / ERROR / CRITICAL
+    file: logs/market_data.log
+    max_bytes: 10485760  # 10 MB
+    backup_count: 5
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+# ============================================
+# IBKR 连接配置
+# ============================================
+ibkr:
+  # 连接参数
+  host: 127.0.0.1
+  port: 4002  # Gateway: 4001/4002, TWS: 7497
+  client_id: 1
+  account: DU123456
+  timeout: 15
+  read_only: false
+
+  # Gateway 定时重启
+  gateway_restart:
+    enabled: true
+    scheduled_time: "03:00:00"  # ET (美东时间)
+    restart_window_minutes: 30
+    pre_restart_prepare_minutes: 10
+    during_restart:
+      stop_new_orders: true
+      pause_strategies: true
+      buffer_signals: true
+
+# ============================================
+# 数据库配置
+# ============================================
+database:
+  # PostgreSQL 主数据库
+  postgres:
+    host: localhost
+    port: 5432
+    database: quant_trading
+    user: postgres
+    password: ""  # 从环境变量 DB_PASSWORD 读取
+    # 或使用连接URL（优先级更高）
+    # url: postgresql://localhost:5432/quant_trading
+
+    # 连接池配置
+    max_pool_size: 10
+    batch_size: 100  # 批量插入大小
+    batch_interval: 10  # 批量插入间隔（秒）
+
+  # Redis 缓存
+  redis:
+    host: localhost
+    port: 6379
+    password: ""  # 从环境变量 REDIS_PASSWORD 读取
+    db: 0
+    # 或使用连接URL
+    # url: redis://localhost:6379/0
+
+    # Redis 配置
+    max_bars: 100  # 最大缓存K线数量
+    ttl_seconds: 3600  # 缓存过期时间（1小时）
+
+# ============================================
+# 市场数据配置
+# ============================================
+market_data:
+  # 历史数据
+  history:
+    default_days: 180  # 默认下载6个月数据
+
+  # 数据验证
+  validation:
+    max_price_change_percent: 0.20  # 最大涨跌幅 20%
+    max_bar_gap_minutes: 5  # 最大K线时间间隔
+    min_volume: 0  # 最小成交量
+    strict_mode: false  # false: 尝试修复，true: 拒绝无效数据
+
+# ============================================
+# 交易日历配置
+# ============================================
+calendar:
+  market: NYSE  # NYSE / NASDAQ
+  timezone: America/New_York
+
+  # 缓存配置
+  cache:
+    enabled: true
+    ttl_days: 7
+    preload_days_ahead: 30
+    preload_days_back: 365
+
+  # 交易时段（美东时间）
+  trading_sessions:
+    pre_market:
+      enabled: true
+      start: "04:00:00"
+      end: "09:30:00"
+    regular:
+      enabled: true
+      start: "09:30:00"
+      end: "16:00:00"
+    after_market:
+      enabled: true
+      start: "16:00:00"
+      end: "20:00:00"
+
+# 交易时段（简化版，用于快速判断）
+trading_hours:
+  pre_market_start: "04:00"
+  regular_start: "09:30"
+  regular_end: "16:00"
+  after_hours_end: "20:00"
+
+# ============================================
+# 交易配置（Week 2 使用）
+# ============================================
+trading:
+  # 风控参数
+  risk:
+    max_position_size: 10000  # 单个持仓最大金额
+    max_order_value: 5000     # 单笔订单最大金额
+    max_daily_loss: 1000      # 单日最大亏损
+    min_cash_balance: 200     # 最低现金余额
+    max_daily_orders: 100     # 单日最大订单数
+
+  # 订单配置
+  order:
+    default_timeout: 30       # 订单超时时间（秒）
+    retry_attempts: 3
+    retry_delay: 5
+
+  # 持仓同步
+  position:
+    sync_interval: 60         # 与IBKR同步间隔（秒）
+    auto_sync: true
+
+# ============================================
+# 监控告警配置（Week 2 使用）
+# ============================================
+monitoring:
+  # 健康检查
+  health_check:
+    enabled: true
+    interval: 60  # 检查间隔（秒）
+
+  # 邮件告警
+  email:
+    enabled: false
+    smtp:
+      host: smtp.gmail.com
+      port: 587
+      use_tls: true
+      username: your_email@gmail.com
+      password: your_app_password
+    recipients:
+      - admin@example.com
+
+# ============================================
+# 策略配置
+# ============================================
+strategy:
+  # 默认参数
+  default:
+    symbol: AAPL
+    quantity: 100
+    bar_size: 5 secs
+
+  # SimpleBuyStrategy 配置
+  simple_buy:
+    symbol: AAPL
+    buy_interval: 10  # 每10个bar买入1次
+    quantity: 1
+
+# ============================================
+# 回测配置（Week 5-7 使用）
+# ============================================
+backtest:
+  # 初始资金
+  initial_capital: 100000
+
+  # 手续费
+  commission:
+    stock: 0.005  # 每股 $0.005
+    min_per_order: 1.0
+
+  # 滑点
+  slippage:
+    fixed: 0.01
+    percent: 0.0

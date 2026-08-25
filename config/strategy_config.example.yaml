@@ -1,0 +1,45 @@
+# SMA双均线交叉策略配置文件示例
+
+# 策略参数
+strategy:
+  name: "SMA Crossover Live"
+  description: "基于SMA双均线交叉的实盘交易策略"
+
+  # SMA参数
+  sma:
+    fast_period: 10      # 快速均线周期（天）
+    slow_period: 20      # 慢速均线周期（天）
+    resolution: "daily"  # 数据频率：daily/hour/minute
+
+  # 交易参数
+  trading:
+    symbol: "AAPL"              # 交易标的（从命令行覆盖）
+    default_quantity: 100       # 默认交易数量（股）
+    max_position_size: 1000     # 最大持仓数量（股）
+
+  # 风险控制
+  risk:
+    max_order_value: 10000  # 单笔最大金额（美元）
+    allow_short: false      # 是否允许做空
+
+# IBKR连接配置
+ibkr:
+  host: "127.0.0.1"
+  port: 7497              # 7497=TWS Paper Trading, 7496=TWS Live
+  client_id: 1
+  timeout: 30
+
+# 数据库配置
+database:
+  host: "localhost"
+  port: 5432
+  database: "trading_system"
+  user: "postgres"
+  password: "your_password"
+
+# 日志配置
+logging:
+  level: "INFO"           # DEBUG/INFO/WARNING/ERROR
+  file: "logs/strategy.log"
+  max_size: 10485760      # 10MB
+  backup_count: 5

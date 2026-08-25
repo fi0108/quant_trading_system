@@ -8,11 +8,12 @@ Provides:
 - Calendar data caching
 """
 
-from datetime import datetime, date, timedelta
-from typing import List, Optional, Dict, Tuple
-import pandas_market_calendars as mcal
-import pandas as pd
+from datetime import date, datetime, timedelta
 from functools import lru_cache
+from typing import Dict, List, Optional, Tuple
+
+import pandas as pd
+import pandas_market_calendars as mcal
 
 
 class TradingCalendar:
@@ -23,12 +24,7 @@ class TradingCalendar:
     Caches calendar data to minimize API calls.
     """
 
-    def __init__(
-        self,
-        market: str = "NYSE",
-        cache_days_ahead: int = 30,
-        cache_days_back: int = 365
-    ):
+    def __init__(self, market: str = "NYSE", cache_days_ahead: int = 30, cache_days_back: int = 365):
         """
         Initialize trading calendar.
 
@@ -52,8 +48,7 @@ class TradingCalendar:
 
         # Fetch valid trading days
         self._schedule = self.calendar.schedule(
-            start_date=start_date.strftime('%Y-%m-%d'),
-            end_date=end_date.strftime('%Y-%m-%d')
+            start_date=start_date.strftime("%Y-%m-%d"), end_date=end_date.strftime("%Y-%m-%d")
         )
 
     @lru_cache(maxsize=1024)
@@ -67,14 +62,10 @@ class TradingCalendar:
         Returns:
             True if trading day, False if weekend/holiday
         """
-        date_str = date.strftime('%Y-%m-%d')
-        return date_str in self._schedule.index.strftime('%Y-%m-%d')
+        date_str = date.strftime("%Y-%m-%d")
+        return date_str in self._schedule.index.strftime("%Y-%m-%d")
 
-    def get_trading_days(
-        self,
-        start_date: date,
-        end_date: date
-    ) -> List[date]:
+    def get_trading_days(self, start_date: date, end_date: date) -> List[date]:
         """
         Get list of trading days in date range.
 
@@ -89,14 +80,10 @@ class TradingCalendar:
             return []
 
         schedule = self.calendar.schedule(
-            start_date=start_date.strftime('%Y-%m-%d'),
-            end_date=end_date.strftime('%Y-%m-%d')
+            start_date=start_date.strftime("%Y-%m-%d"), end_date=end_date.strftime("%Y-%m-%d")
         )
 
-        return [
-            datetime.strptime(d, '%Y-%m-%d').date()
-            for d in schedule.index.strftime('%Y-%m-%d')
-        ]
+        return [datetime.strptime(d, "%Y-%m-%d").date() for d in schedule.index.strftime("%Y-%m-%d")]
 
     def next_trading_day(self, date: Optional[date] = None) -> date:
         """
@@ -144,10 +131,7 @@ class TradingCalendar:
 
         raise ValueError(f"No trading day found within 10 days before {date}")
 
-    def get_market_hours(
-        self,
-        date: date
-    ) -> Optional[Tuple[datetime, datetime]]:
+    def get_market_hours(self, date: date) -> Optional[Tuple[datetime, datetime]]:
         """
         Get market open and close times for a trading day.
 
@@ -160,13 +144,10 @@ class TradingCalendar:
         if not self.is_trading_day(date):
             return None
 
-        date_str = date.strftime('%Y-%m-%d')
+        date_str = date.strftime("%Y-%m-%d")
         row = self._schedule.loc[date_str]
 
-        return (
-            row['market_open'].to_pydatetime(),
-            row['market_close'].to_pydatetime()
-        )
+        return (row["market_open"].to_pydatetime(), row["market_close"].to_pydatetime())
 
     def is_half_day(self, date: date) -> bool:
         """
@@ -188,11 +169,7 @@ class TradingCalendar:
         # Regular trading is 6.5 hours; half day is typically 3-4 hours
         return trading_hours < 5.0
 
-    def count_trading_days(
-        self,
-        start_date: date,
-        end_date: date
-    ) -> int:
+    def count_trading_days(self, start_date: date, end_date: date) -> int:
         """
         Count number of trading days in range.
 
@@ -205,11 +182,7 @@ class TradingCalendar:
         """
         return len(self.get_trading_days(start_date, end_date))
 
-    def get_trading_day_offset(
-        self,
-        date: date,
-        offset: int
-    ) -> date:
+    def get_trading_day_offset(self, date: date, offset: int) -> date:
         """
         Get trading day N days before/after given date.
 
@@ -234,10 +207,7 @@ class TradingCalendar:
 
         return current
 
-    def get_holidays(
-        self,
-        year: int
-    ) -> List[Tuple[date, str]]:
+    def get_holidays(self, year: int) -> List[Tuple[date, str]]:
         """
         Get list of market holidays for given year.
 
@@ -253,7 +223,7 @@ class TradingCalendar:
         holidays = self.calendar.holidays()
 
         # Get all trading days in the year
-        all_days = pd.date_range(start=start_date, end=end_date, freq='D')
+        all_days = pd.date_range(start=start_date, end=end_date, freq="D")
         trading_days = self.calendar.schedule(start_date=start_date, end_date=end_date).index
 
         # Holidays are days that are not trading days (excluding weekends)

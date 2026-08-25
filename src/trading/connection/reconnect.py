@@ -11,8 +11,8 @@ Implements retry logic with increasing delays:
 Maximum 10 retry attempts before giving up.
 """
 
-from typing import Optional
 from datetime import datetime, timedelta
+from typing import Optional
 
 
 class ReconnectStrategy:
@@ -146,16 +146,14 @@ class ReconnectStrategy:
             Dictionary with attempt count, downtime, and next retry time
         """
         return {
-            'attempt_count': self._attempt_count,
-            'max_retries': self.max_retries,
-            'has_attempts_remaining': self.has_attempts_remaining,
-            'last_attempt_time': self._last_attempt_time,
-            'first_failure_time': self._first_failure_time,
-            'total_downtime_seconds': (
-                self.get_total_downtime().total_seconds()
-                if self.get_total_downtime()
-                else None
+            "attempt_count": self._attempt_count,
+            "max_retries": self.max_retries,
+            "has_attempts_remaining": self.has_attempts_remaining,
+            "last_attempt_time": self._last_attempt_time,
+            "first_failure_time": self._first_failure_time,
+            "total_downtime_seconds": (
+                self.get_total_downtime().total_seconds() if self.get_total_downtime() else None
             ),
-            'next_attempt_time': self.get_next_attempt_time(),
-            'next_delay_seconds': self.get_delay() if self.has_attempts_remaining else None
+            "next_attempt_time": self.get_next_attempt_time(),
+            "next_delay_seconds": self.get_delay() if self.has_attempts_remaining else None,
         }

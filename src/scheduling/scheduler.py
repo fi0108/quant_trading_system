@@ -9,13 +9,14 @@
 """
 
 import asyncio
-from datetime import datetime, timedelta
-from typing import Optional, Callable
 import logging
+from datetime import datetime, timedelta
+from typing import Callable, Optional
 
-from utils.timezone import TimezoneManager
 from trading_calendar.trading_calendar import TradingCalendar
+
 from trading.connection.manager import ConnectionManager
+from utils.timezone import TimezoneManager
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ class MarketDataScheduler:
         self,
         timezone_manager: Optional[TimezoneManager] = None,
         trading_calendar: Optional[TradingCalendar] = None,
-        connection_manager: Optional[ConnectionManager] = None
+        connection_manager: Optional[ConnectionManager] = None,
     ):
         """
         初始化调度器
@@ -220,29 +221,29 @@ class MarketDataScheduler:
         today = now_market.date()
 
         return {
-            'scheduler_running': self._running,
-            'current_time': {
-                'utc': now_utc.isoformat(),
-                'market': now_market.isoformat(),
-                'local': self.tz_manager.utc_to_local(now_utc).isoformat(),
-                'formatted': self.tz_manager.format_dual_timezone(now_utc)
+            "scheduler_running": self._running,
+            "current_time": {
+                "utc": now_utc.isoformat(),
+                "market": now_market.isoformat(),
+                "local": self.tz_manager.utc_to_local(now_utc).isoformat(),
+                "formatted": self.tz_manager.format_dual_timezone(now_utc),
             },
-            'trading_day': {
-                'date': today.isoformat(),
-                'is_trading_day': self.calendar.is_trading_day(today),
-                'is_half_day': self.calendar.is_half_day(today),
-                'next_trading_day': self.calendar.next_trading_day(today).isoformat()
+            "trading_day": {
+                "date": today.isoformat(),
+                "is_trading_day": self.calendar.is_trading_day(today),
+                "is_half_day": self.calendar.is_half_day(today),
+                "next_trading_day": self.calendar.next_trading_day(today).isoformat(),
             },
-            'connection': {
-                'should_connect': should_connect,
-                'reason': reason,
-                'is_connected': self.conn_manager.is_connected(),
-                'is_ready': self.conn_manager.is_ready(),
-                'connection_status': self.conn_manager.get_status()
+            "connection": {
+                "should_connect": should_connect,
+                "reason": reason,
+                "is_connected": self.conn_manager.is_connected(),
+                "is_ready": self.conn_manager.is_ready(),
+                "connection_status": self.conn_manager.get_status(),
             },
-            'timezone': {
-                'is_dst': self.tz_manager.is_dst(),
-                'utc_offset': self.tz_manager.get_utc_offset(),
-                'timezone_name': 'EDT' if self.tz_manager.is_dst() else 'EST'
-            }
+            "timezone": {
+                "is_dst": self.tz_manager.is_dst(),
+                "utc_offset": self.tz_manager.get_utc_offset(),
+                "timezone_name": "EDT" if self.tz_manager.is_dst() else "EST",
+            },
         }

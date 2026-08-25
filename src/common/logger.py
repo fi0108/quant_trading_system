@@ -5,7 +5,9 @@
 
 import sys
 from pathlib import Path
+
 from loguru import logger
+
 from .config import config
 
 
@@ -20,20 +22,11 @@ def setup_logger():
     # 移除默认处理器
     logger.remove()
 
-    # 从配置读取参数（如果config/system.yaml没有相关配置，使用默认值）
-    try:
-        system_config = config.load('system')
-        # 注意：当前system.yaml没有logging配置，我们使用合理的默认值
-        log_level = "INFO"
-        log_path = "logs/"
-        rotation = "1 day"
-        retention = "30 days"
-    except Exception:
-        # 如果配置文件不存在或格式错误，使用默认值
-        log_level = "INFO"
-        log_path = "logs/"
-        rotation = "1 day"
-        retention = "30 days"
+    # 从统一配置读取参数
+    log_level = config.get("system.logging.level", "INFO")
+    log_path = config.get("system.logging.file.path", "logs/")
+    rotation = "1 day"
+    retention = "30 days"
 
     # 创建日志目录
     Path(log_path).mkdir(parents=True, exist_ok=True)
@@ -43,10 +36,10 @@ def setup_logger():
         sys.stdout,
         level=log_level,
         format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | "
-               "<level>{level: <8}</level> | "
-               "<cyan>{name}</cyan>:<cyan>{function}</cyan> - "
-               "<level>{message}</level>",
-        colorize=True
+        "<level>{level: <8}</level> | "
+        "<cyan>{name}</cyan>:<cyan>{function}</cyan> - "
+        "<level>{message}</level>",
+        colorize=True,
     )
 
     # 文件输出（所有日志）
@@ -56,7 +49,7 @@ def setup_logger():
         rotation=rotation,
         retention=retention,
         format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}",
-        encoding='utf-8'
+        encoding="utf-8",
     )
 
     # 错误日志单独文件
@@ -66,7 +59,7 @@ def setup_logger():
         rotation=rotation,
         retention=retention,
         format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}",
-        encoding='utf-8'
+        encoding="utf-8",
     )
 
     return logger

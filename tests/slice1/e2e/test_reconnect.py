@@ -5,10 +5,11 @@ Week 1 端到端测试 - 断线重连验证
 """
 
 import time
+
 import pytest
 
-from data.ibkr_client import IBKRClient
 from common.logger import log
+from data.ibkr_client import IBKRClient
 
 
 @pytest.mark.e2e

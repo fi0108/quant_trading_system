@@ -4,17 +4,19 @@
 """
 
 import time
+from datetime import datetime
+from datetime import time as dt_time
+
 import pytest
-from datetime import datetime, time as dt_time
 import pytz
 
+from common.logger import log
 from data.ibkr_client import IBKRClient
-from trading.order.manager import OrderManager
-from trading.risk.manager import RiskManager
-from trading.position.manager import PositionManager
 from data.realtime_feed import RealtimeDataFeed
 from strategy.examples.simple_buy import SimpleBuyStrategy
-from common.logger import log
+from trading.order.manager import OrderManager
+from trading.position.manager import PositionManager
+from trading.risk.manager import RiskManager
 
 
 def is_market_data_available():
@@ -30,7 +32,7 @@ def is_market_data_available():
         tuple: (has_data: bool, reason: str, current_et_time: str)
     """
     # 获取美东时区（自动处理DST）
-    eastern = pytz.timezone('US/Eastern')
+    eastern = pytz.timezone("US/Eastern")
 
     # 从本地时间转换到美东时间
     local_now = datetime.now()
@@ -42,26 +44,26 @@ def is_market_data_available():
 
     # 检查是否是周末
     if et_now.weekday() >= 5:  # 5=周六, 6=周日
-        return False, f"Weekend ({et_now.strftime('%A')})", et_now.strftime('%H:%M:%S %Z')
+        return False, f"Weekend ({et_now.strftime('%A')})", et_now.strftime("%H:%M:%S %Z")
 
     # 检查时间段（美东时间）
     current_time = et_now.time()
 
     # 盘前数据: 04:00-09:30 ET
     if dt_time(4, 0) <= current_time < dt_time(9, 30):
-        return True, "Pre-market hours (04:00-09:30 ET)", et_now.strftime('%H:%M:%S %Z')
+        return True, "Pre-market hours (04:00-09:30 ET)", et_now.strftime("%H:%M:%S %Z")
 
     # 盘中数据: 09:30-16:00 ET
     elif dt_time(9, 30) <= current_time < dt_time(16, 0):
-        return True, "Regular market hours (09:30-16:00 ET)", et_now.strftime('%H:%M:%S %Z')
+        return True, "Regular market hours (09:30-16:00 ET)", et_now.strftime("%H:%M:%S %Z")
 
     # 盘后数据: 16:00-20:00 ET
     elif dt_time(16, 0) <= current_time < dt_time(20, 0):
-        return True, "After-hours (16:00-20:00 ET)", et_now.strftime('%H:%M:%S %Z')
+        return True, "After-hours (16:00-20:00 ET)", et_now.strftime("%H:%M:%S %Z")
 
     # 深夜无数据: 20:00-04:00 ET
     else:
-        return False, f"Market closed (20:00-04:00 ET)", et_now.strftime('%H:%M:%S %Z')
+        return False, f"Market closed (20:00-04:00 ET)", et_now.strftime("%H:%M:%S %Z")
 
 
 @pytest.mark.integration
@@ -110,10 +112,7 @@ def test_week1_hello_world_integration():
         # 4. 初始化策略
         log.info("\n[4/7] Initializing strategy...")
         strategy = SimpleBuyStrategy(
-            order_manager=order_manager,
-            risk_manager=risk_manager,
-            symbol="AAPL",
-            buy_interval=10
+            order_manager=order_manager, risk_manager=risk_manager, symbol="AAPL", buy_interval=10
         )
         log.info("✓ Strategy initialized")
 
@@ -121,11 +120,7 @@ def test_week1_hello_world_integration():
         log.info("\n[5/7] Subscribing to real-time data...")
         feed = RealtimeDataFeed(client)
 
-        subscribe_success = feed.subscribe_bars(
-            symbol="AAPL",
-            bar_size="5 secs",
-            callback=strategy.on_bar
-        )
+        subscribe_success = feed.subscribe_bars(symbol="AAPL", bar_size="5 secs", callback=strategy.on_bar)
 
         assert subscribe_success, "Failed to subscribe to real-time bars"
         log.info("✓ Subscribed to AAPL 5-second bars")
@@ -189,7 +184,7 @@ def test_week1_hello_world_integration():
     finally:
         # 清理
         log.info("\n[Cleanup] Unsubscribing and disconnecting...")
-        if 'feed' in locals():
+        if "feed" in locals():
             feed.unsubscribe_all()
         if client.is_connected():
             client.disconnect()

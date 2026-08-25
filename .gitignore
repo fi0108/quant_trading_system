@@ -1,14 +1,8 @@
 # Python
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-
-# C extensions
-*.so
-
-# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -22,168 +16,37 @@ parts/
 sdist/
 var/
 wheels/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-PIPFILE.lock
 
-# PyInstaller
-*.manifest
-*.spec
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
-
-# Virtual Environments
+# Virtual Environment
 venv/
+ENV/
+env/
 
-
-# Environment Variables
-.env
-.env.local
-.env.*.local
-.env.development
-.env.test
-.env.production
-.env.staging
-
-# IDEs and Editors
-# VSCode
+# IDE
 .vscode/
-.history/
-
-# PyCharm
 .idea/
-*.iml
-*.iws
-.idea_modules/
-
-# Sublime Text
-*.sublime-project
-*.sublime-workspace
-
-# Vim
 *.swp
 *.swo
-*~
 
-# Emacs
-*~
-\#*\#
-.\#*
-
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Windows
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
-*.stackdump
-[Dd]esktop.ini
-$RECYCLE.BIN/
-*.lnk
-
-# Data Files
-data/
-*.csv
-*.xlsx
-*.xls
-*.db
-*.sqlite
-*.sqlite3
-*.h5
-*.hdf5
-*.parquet
-*.feather
-*.pkl
-*.pickle
-
-# Log Files
+# Logs
 logs/
 *.log
-*.log.*
 
-# Jupyter Notebook
-.ipynb_checkpoints/
-*.ipynb_checkpoints
+# Environment variables
+.env           # 生产环境密码，不提交
 
-# Trading System Specific
-# Backup files
-*.bak
-*.backup
-*_backup
-*.old
+# OS
+.DS_Store
+Thumbs.db
 
-# Cache files
-cache/
-.cache/
-*.cache
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
 
-# Temporary files
-tmp/
-temp/
-*.tmp
-*.temp
-
-# Trading data and results
-trades/
-positions/
-orders/
-backtest_results/
-strategy_results/
-
-# API keys and credentials (additional protection)
-*_key.txt
-*_secret.txt
-credentials.json
-api_keys.json
-
-# Model files (large ML models)
-models/
-*.h5
-*.pkl
-*.joblib
-*.model
-
-# Documentation builds
-docs/_build/
-docs/.doctrees/
-
-# Profiling data
-*.prof
-*.lprof
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# pytype static type analyzer
-.pytype/
-
-# Cython debug symbols
-cython_debug/
-
-.env.dev
-.env.local
-.env.*
+# Database
+*.db
+*.sqlite3

@@ -1,0 +1,36 @@
+# Production Environment Configuration
+# 生产环境配置覆盖
+
+# 系统配置
+system:
+  mode: production
+  logging:
+    level: INFO
+
+# IBKR 生产环境
+ibkr:
+  port: 4001  # Gateway live trading port
+  account: U123456  # 替换为真实账户
+  read_only: false
+
+# 数据库生产环境
+database:
+  postgres:
+    database: quant_trading
+    host: your-db-host.com
+    # 密码使用环境变量 DB_PASSWORD
+
+# 监控配置
+monitoring:
+  email:
+    enabled: true
+  health_check:
+    interval: 30  # 更频繁的健康检查
+
+# 风控参数（生产环境更严格）
+trading:
+  risk:
+    max_position_size: 50000
+    max_order_value: 10000
+    max_daily_loss: 2000
+    min_cash_balance: 1000

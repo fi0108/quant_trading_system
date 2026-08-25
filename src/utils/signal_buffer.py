@@ -4,14 +4,15 @@ Signal Buffer for Gateway restart window.
 Buffers trading signals during Gateway restart and executes them after recovery.
 """
 
-from datetime import datetime, timedelta
-from typing import Optional, Dict, Any, List
-from enum import Enum
 import json
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class SignalStatus(Enum):
     """Signal buffer status."""
+
     PENDING = "pending"
     EXECUTED = "executed"
     EXPIRED = "expired"
@@ -28,7 +29,7 @@ class BufferedSignal:
         signal_type: str,
         signal_time: datetime,
         signal_data: Dict[str, Any],
-        expiry_minutes: int = 10
+        expiry_minutes: int = 10,
     ):
         """
         Initialize buffered signal.
@@ -72,10 +73,7 @@ class BufferedSignal:
         Returns:
             True if signal can be executed
         """
-        return (
-            self.status == SignalStatus.PENDING and
-            not self.is_expired(current_time)
-        )
+        return self.status == SignalStatus.PENDING and not self.is_expired(current_time)
 
     def mark_executed(self, execution_time: datetime):
         """Mark signal as executed."""
@@ -122,18 +120,18 @@ class BufferedSignal:
             Dictionary representation
         """
         return {
-            'strategy_name': self.strategy_name,
-            'symbol': self.symbol,
-            'signal_type': self.signal_type,
-            'signal_time': self.signal_time.isoformat(),
-            'expiry_time': self.expiry_time.isoformat(),
-            'signal_data': json.dumps(self.signal_data),
-            'status': self.status.value,
-            'executed_at': self.executed_at.isoformat() if self.executed_at else None
+            "strategy_name": self.strategy_name,
+            "symbol": self.symbol,
+            "signal_type": self.signal_type,
+            "signal_time": self.signal_time.isoformat(),
+            "expiry_time": self.expiry_time.isoformat(),
+            "signal_data": json.dumps(self.signal_data),
+            "status": self.status.value,
+            "executed_at": self.executed_at.isoformat() if self.executed_at else None,
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'BufferedSignal':
+    def from_dict(cls, data: Dict[str, Any]) -> "BufferedSignal":
         """
         Create BufferedSignal from dictionary.
 
@@ -144,16 +142,16 @@ class BufferedSignal:
             BufferedSignal instance
         """
         signal = cls(
-            strategy_name=data['strategy_name'],
-            symbol=data['symbol'],
-            signal_type=data['signal_type'],
-            signal_time=datetime.fromisoformat(data['signal_time']),
-            signal_data=json.loads(data['signal_data'])
+            strategy_name=data["strategy_name"],
+            symbol=data["symbol"],
+            signal_type=data["signal_type"],
+            signal_time=datetime.fromisoformat(data["signal_time"]),
+            signal_data=json.loads(data["signal_data"]),
         )
-        signal.expiry_time = datetime.fromisoformat(data['expiry_time'])
-        signal.status = SignalStatus(data['status'])
-        if data['executed_at']:
-            signal.executed_at = datetime.fromisoformat(data['executed_at'])
+        signal.expiry_time = datetime.fromisoformat(data["expiry_time"])
+        signal.status = SignalStatus(data["status"])
+        if data["executed_at"]:
+            signal.executed_at = datetime.fromisoformat(data["executed_at"])
         return signal
 
 
@@ -185,7 +183,7 @@ class SignalBuffer:
         signal_type: str,
         signal_time: datetime,
         signal_data: Dict[str, Any],
-        expiry_minutes: Optional[int] = None
+        expiry_minutes: Optional[int] = None,
     ) -> BufferedSignal:
         """
         Add signal to buffer.
@@ -210,7 +208,7 @@ class SignalBuffer:
             signal_type=signal_type,
             signal_time=signal_time,
             signal_data=signal_data,
-            expiry_minutes=expiry_minutes
+            expiry_minutes=expiry_minutes,
         )
 
         self._signals.append(signal)
@@ -226,10 +224,7 @@ class SignalBuffer:
         Returns:
             List of valid pending signals
         """
-        return [
-            signal for signal in self._signals
-            if signal.is_valid(current_time)
-        ]
+        return [signal for signal in self._signals if signal.is_valid(current_time)]
 
     def get_expired_signals(self, current_time: datetime) -> List[BufferedSignal]:
         """
@@ -242,7 +237,8 @@ class SignalBuffer:
             List of expired signals
         """
         return [
-            signal for signal in self._signals
+            signal
+            for signal in self._signals
             if signal.status == SignalStatus.PENDING and signal.is_expired(current_time)
         ]
 
@@ -295,15 +291,13 @@ class SignalBuffer:
         """
         if reference_time is None:
             import pytz
+
             reference_time = pytz.UTC.localize(datetime.utcnow())
 
         cutoff_time = reference_time - timedelta(hours=keep_hours)
         before_count = len(self._signals)
 
-        self._signals = [
-            signal for signal in self._signals
-            if signal.signal_time >= cutoff_time
-        ]
+        self._signals = [signal for signal in self._signals if signal.signal_time >= cutoff_time]
 
         return before_count - len(self._signals)
 
@@ -337,16 +331,10 @@ class SignalBuffer:
         expired = self.get_expired_signals(current_time)
 
         return {
-            'total_signals': len(self._signals),
-            'pending_count': len(pending),
-            'expired_count': len(expired),
-            'status_counts': self.count_by_status(),
-            'oldest_signal': (
-                min(s.signal_time for s in self._signals)
-                if self._signals else None
-            ),
-            'newest_signal': (
-                max(s.signal_time for s in self._signals)
-                if self._signals else None
-            )
+            "total_signals": len(self._signals),
+            "pending_count": len(pending),
+            "expired_count": len(expired),
+            "status_counts": self.count_by_status(),
+            "oldest_signal": (min(s.signal_time for s in self._signals) if self._signals else None),
+            "newest_signal": (max(s.signal_time for s in self._signals) if self._signals else None),
         }

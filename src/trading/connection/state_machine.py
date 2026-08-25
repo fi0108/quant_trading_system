@@ -10,13 +10,14 @@ States:
 - GATEWAY_RESTARTING: Gateway is in scheduled restart window
 """
 
-from enum import Enum, auto
-from typing import Optional, Callable
 from datetime import datetime
+from enum import Enum, auto
+from typing import Callable, Optional
 
 
 class ConnectionState(Enum):
     """Connection states."""
+
     DISCONNECTED = auto()
     CONNECTING = auto()
     CONNECTED = auto()
@@ -64,10 +65,7 @@ class ConnectionStateMachine:
 
     def is_connected(self) -> bool:
         """Check if in any connected state."""
-        return self._state in [
-            ConnectionState.CONNECTED,
-            ConnectionState.READY
-        ]
+        return self._state in [ConnectionState.CONNECTED, ConnectionState.READY]
 
     def is_ready(self) -> bool:
         """Check if ready for trading."""
@@ -88,35 +86,29 @@ class ConnectionStateMachine:
             True if transition is allowed
         """
         valid_transitions = {
-            ConnectionState.DISCONNECTED: [
-                ConnectionState.CONNECTING,
-                ConnectionState.GATEWAY_RESTARTING
-            ],
+            ConnectionState.DISCONNECTED: [ConnectionState.CONNECTING, ConnectionState.GATEWAY_RESTARTING],
             ConnectionState.CONNECTING: [
                 ConnectionState.CONNECTED,
                 ConnectionState.DISCONNECTED,
-                ConnectionState.GATEWAY_RESTARTING
+                ConnectionState.GATEWAY_RESTARTING,
             ],
             ConnectionState.CONNECTED: [
                 ConnectionState.READY,
                 ConnectionState.CONNECTION_LOST,
                 ConnectionState.DISCONNECTED,
-                ConnectionState.GATEWAY_RESTARTING
+                ConnectionState.GATEWAY_RESTARTING,
             ],
             ConnectionState.READY: [
                 ConnectionState.CONNECTION_LOST,
                 ConnectionState.DISCONNECTED,
-                ConnectionState.GATEWAY_RESTARTING
+                ConnectionState.GATEWAY_RESTARTING,
             ],
             ConnectionState.CONNECTION_LOST: [
                 ConnectionState.CONNECTING,
                 ConnectionState.DISCONNECTED,
-                ConnectionState.GATEWAY_RESTARTING
+                ConnectionState.GATEWAY_RESTARTING,
             ],
-            ConnectionState.GATEWAY_RESTARTING: [
-                ConnectionState.CONNECTING,
-                ConnectionState.DISCONNECTED
-            ]
+            ConnectionState.GATEWAY_RESTARTING: [ConnectionState.CONNECTING, ConnectionState.DISCONNECTED],
         }
 
         return new_state in valid_transitions.get(self._state, [])
@@ -135,9 +127,7 @@ class ConnectionStateMachine:
             ValueError: If transition is not allowed
         """
         if not self.can_transition_to(new_state):
-            raise ValueError(
-                f"Invalid transition from {self._state.name} to {new_state.name}"
-            )
+            raise ValueError(f"Invalid transition from {self._state.name} to {new_state.name}")
 
         self._previous_state = self._state
         self._state = new_state
@@ -148,11 +138,7 @@ class ConnectionStateMachine:
 
         return True
 
-    def register_callback(
-        self,
-        state: ConnectionState,
-        callback: Callable
-    ):
+    def register_callback(self, state: ConnectionState, callback: Callable):
         """
         Register callback for state entry.
 

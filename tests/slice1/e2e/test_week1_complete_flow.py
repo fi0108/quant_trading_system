@@ -5,15 +5,16 @@ Week 1 端到端测试 - 完整流程验证
 """
 
 import time
+
 import pytest
 
+from common.logger import log
 from data.ibkr_client import IBKRClient
-from trading.order.manager import OrderManager
-from trading.risk.manager import RiskManager
-from trading.position.manager import PositionManager
 from data.realtime_feed import RealtimeDataFeed
 from strategy.examples.simple_buy import SimpleBuyStrategy
-from common.logger import log
+from trading.order.manager import OrderManager
+from trading.position.manager import PositionManager
+from trading.risk.manager import RiskManager
 
 
 @pytest.mark.e2e
@@ -56,10 +57,7 @@ def test_week1_complete_flow():
         # 初始化策略
         log.info("\n[4/7] Initializing strategy...")
         strategy = SimpleBuyStrategy(
-            order_manager=order_manager,
-            risk_manager=risk_manager,
-            symbol="AAPL",
-            buy_interval=10
+            order_manager=order_manager, risk_manager=risk_manager, symbol="AAPL", buy_interval=10
         )
         log.info("✓ Strategy initialized")
 
@@ -67,11 +65,7 @@ def test_week1_complete_flow():
         log.info("\n[5/7] Subscribing to real-time data...")
         feed = RealtimeDataFeed(client)
 
-        success = feed.subscribe_bars(
-            symbol="AAPL",
-            bar_size="5 secs",
-            callback=strategy.on_bar
-        )
+        success = feed.subscribe_bars(symbol="AAPL", bar_size="5 secs", callback=strategy.on_bar)
         assert success, "Failed to subscribe to real-time data"
         log.info("✓ Subscribed to AAPL 5-second bars")
 
@@ -120,7 +114,7 @@ def test_week1_complete_flow():
     finally:
         # 清理
         log.info("\n[Cleanup] Unsubscribing and disconnecting...")
-        if 'feed' in locals():
+        if "feed" in locals():
             feed.unsubscribe_all()
         if client.is_connected():
             client.disconnect()

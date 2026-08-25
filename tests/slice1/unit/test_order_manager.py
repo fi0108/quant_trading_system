@@ -1,11 +1,12 @@
 """订单管理器功能测试"""
 
-import pytest
-from unittest.mock import Mock, MagicMock
+from unittest.mock import MagicMock, Mock
 
-from trading.order.manager import OrderManager
-from data.ibkr_client import IBKRClient
+import pytest
+
 from common.models import OrderStatus
+from data.ibkr_client import IBKRClient
+from trading.order.manager import OrderManager
 
 
 def test_create_market_order_success():

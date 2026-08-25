@@ -6,4 +6,4 @@
 
 from .examples.simple_buy import SimpleBuyStrategy
 
-__all__ = ['SimpleBuyStrategy']
+__all__ = ["SimpleBuyStrategy"]

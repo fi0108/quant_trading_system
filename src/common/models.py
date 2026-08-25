@@ -5,8 +5,8 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 from enum import Enum
+from typing import Optional
 
 
 @dataclass
@@ -24,6 +24,7 @@ class Bar:
         close: 收盘价
         volume: 成交量
     """
+
     symbol: str
     timestamp: datetime
     open: float
@@ -52,6 +53,7 @@ class ConnectionStatus:
         last_disconnect_time: 最后断开时间
         reconnect_attempts: 重连尝试次数
     """
+
     connected: bool
     last_connect_time: Optional[datetime] = None
     last_disconnect_time: Optional[datetime] = None
@@ -65,6 +67,7 @@ class ConnectionStatus:
 
 class OrderStatus(Enum):
     """订单状态枚举"""
+
     SUBMITTED = "Submitted"
     FILLED = "Filled"
     CANCELLED = "Cancelled"
@@ -84,23 +87,24 @@ class Order:
         quantity: 数量
         order_type: 订单类型 (MARKET/LIMIT)
         status: 订单状态
+        limit_price: 限价单价格（可选）
         filled_quantity: 已成交数量
         avg_fill_price: 平均成交价
-        create_time: 创建时间
+        created_at: 创建时间
+        filled_at: 成交时间
     """
+
     order_id: int
     symbol: str
     action: str
     quantity: int
     order_type: str
     status: OrderStatus
+    limit_price: Optional[float] = None
     filled_quantity: int = 0
-    avg_fill_price: float = 0.0
-    create_time: datetime = None
-
-    def __post_init__(self):
-        if self.create_time is None:
-            self.create_time = datetime.now()
+    avg_fill_price: Optional[float] = None
+    created_at: Optional[datetime] = None
+    filled_at: Optional[datetime] = None
 
 
 @dataclass
@@ -115,9 +119,14 @@ class Position:
         avg_cost: 平均成本
         market_value: 市值
         unrealized_pnl: 未实现盈亏
+        current_price: 当前价格（可选）
+        realized_pnl: 已实现盈亏（可选）
     """
+
     symbol: str
     quantity: float
     avg_cost: float
     market_value: float
     unrealized_pnl: float
+    current_price: Optional[float] = None
+    realized_pnl: float = 0.0

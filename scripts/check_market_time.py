@@ -2,15 +2,18 @@
 测试时区转换和市场时间判断
 """
 
-from datetime import datetime, time as dt_time
+from datetime import datetime
+from datetime import time as dt_time
+
 import pytz
+
 
 def check_market_time():
     """检查当前市场状态"""
 
     # 获取美东时区（自动处理夏令时/冬令时）
-    eastern = pytz.timezone('US/Eastern')
-    shanghai = pytz.timezone('Asia/Shanghai')
+    eastern = pytz.timezone("US/Eastern")
+    shanghai = pytz.timezone("Asia/Shanghai")
 
     # 获取当前时间
     local_now = datetime.now()
@@ -96,6 +99,7 @@ def check_market_time():
         print("✗ 当前不适合运行集成测试（无市场数据）")
 
     print("=" * 80)
+
 
 if __name__ == "__main__":
     check_market_time()

@@ -10,17 +10,17 @@ from pathlib import Path
 # 添加src到路径
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from data.storage.models import init_database, create_tables, drop_tables
 from common.logger import log
+from data.storage.models import create_tables, drop_tables, init_database
 
 
 def main():
     """主函数"""
     import argparse
 
-    parser = argparse.ArgumentParser(description='Database initialization script')
-    parser.add_argument('--drop', action='store_true', help='Drop tables before creating')
-    parser.add_argument('--recreate', action='store_true', help='Drop and recreate tables')
+    parser = argparse.ArgumentParser(description="Database initialization script")
+    parser.add_argument("--drop", action="store_true", help="Drop tables before creating")
+    parser.add_argument("--recreate", action="store_true", help="Drop and recreate tables")
     args = parser.parse_args()
 
     try:

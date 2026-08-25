@@ -1,111 +1,171 @@
-"""配置管理模块
+"""
+统一配置管理器
 
-统一的配置加载和访问接口，支持多个YAML配置文件。
+支持：
+- 统一的 config.yaml 配置文件
+- 环境变量覆盖（.env / .env.dev）
+- 多环境配置（development/production）
+- 配置缓存
 """
 
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
+
 import yaml
+
+# 自动加载环境变量
+try:
+    from dotenv import load_dotenv
+
+    # 根据ENV环境变量决定加载哪个.env文件
+    env = os.getenv("ENV", "development")
+
+    if env == "production":
+        # 生产环境：加载 .env
+        env_file = Path(".env")
+        if env_file.exists():
+            load_dotenv(env_file)
+        else:
+            # 如果.env不存在，尝试从环境变量读取
+            pass
+    else:
+        # 开发/测试环境：加载 .env.dev
+        env_file = Path(".env.dev")
+        if env_file.exists():
+            load_dotenv(env_file)
+        else:
+            # 兼容：如果.env.dev不存在，尝试.env
+            load_dotenv()
+
+except ImportError:
+    # python-dotenv 未安装，跳过
+    pass
 
 
 class Config:
-    """配置管理类
+    """统一配置管理器"""
 
-    提供统一的配置文件加载和访问接口。
-    支持嵌套配置访问，使用点分隔路径（如 "ibkr.host"）。
-    """
+    def __init__(self):
+        self._config = {}
+        self._config_dir = Path(__file__).parent.parent.parent / "config"
+        self._load_config()
 
-    def __init__(self, config_dir: str = "config"):
-        """初始化配置管理器
-
-        Args:
-            config_dir: 配置文件目录路径
-        """
-        self.config_dir = Path(config_dir)
-        self._configs: Dict[str, Any] = {}
-
-    def load(self, name: str) -> Dict[str, Any]:
-        """加载配置文件
-
-        Args:
-            name: 配置文件名（不含.yaml后缀）
-
-        Returns:
-            配置字典
-
-        Raises:
-            FileNotFoundError: 配置文件不存在
-        """
-        # 如果已缓存，直接返回
-        if name in self._configs:
-            return self._configs[name]
-
-        # 构建配置文件路径
-        config_file = self.config_dir / f"{name}.yaml"
-        if not config_file.exists():
+    def _load_config(self):
+        """加载配置文件"""
+        # 1. 加载主配置文件 config.yaml
+        config_file = self._config_dir / "config.yaml"
+        if config_file.exists():
+            with open(config_file, "r", encoding="utf-8") as f:
+                self._config = yaml.safe_load(f) or {}
+        else:
             raise FileNotFoundError(f"Config file not found: {config_file}")
 
-        # 加载YAML文件
-        with open(config_file, 'r', encoding='utf-8') as f:
-            config = yaml.safe_load(f)
+        # 2. 根据环境加载环境特定配置
+        env = os.getenv("ENV", "development")
+        env_config_file = self._config_dir / f"config.{env}.yaml"
 
-        # 缓存配置
-        self._configs[name] = config
-        return config
+        if env_config_file.exists():
+            with open(env_config_file, "r", encoding="utf-8") as f:
+                env_config = yaml.safe_load(f) or {}
+                self._deep_merge(self._config, env_config)
 
-    def get(self, name: str, key_path: str, default: Any = None) -> Any:
-        """获取配置项
+        # 3. 应用环境变量覆盖
+        self._apply_env_overrides()
 
-        支持点分隔的嵌套路径访问。
+    def _deep_merge(self, base: dict, override: dict):
+        """深度合并字典"""
+        for key, value in override.items():
+            if key in base and isinstance(base[key], dict) and isinstance(value, dict):
+                self._deep_merge(base[key], value)
+            else:
+                base[key] = value
+
+    def _apply_env_overrides(self):
+        """应用环境变量覆盖"""
+        # 数据库密码
+        if os.getenv("DB_PASSWORD"):
+            self._set_nested("database.postgres.password", os.getenv("DB_PASSWORD"))
+
+        # Redis 密码
+        if os.getenv("REDIS_PASSWORD"):
+            self._set_nested("database.redis.password", os.getenv("REDIS_PASSWORD"))
+
+        # IBKR 密码（如果需要）
+        if os.getenv("IBKR_PASSWORD"):
+            self._set_nested("ibkr.password", os.getenv("IBKR_PASSWORD"))
+
+        # 邮件密码
+        if os.getenv("EMAIL_PASSWORD"):
+            self._set_nested("monitoring.email.smtp.password", os.getenv("EMAIL_PASSWORD"))
+
+    def get(self, key: str, default: Any = None) -> Any:
+        """
+        获取配置值（支持点号路径）
 
         Args:
-            name: 配置文件名（不含.yaml后缀）
-            key_path: 配置路径，用.分隔，如 "ibkr.host"
-            default: 默认值，如果配置项不存在则返回此值
+            key: 配置键，支持点号路径如 "database.postgres.host"
+            default: 默认值
 
         Returns:
-            配置值，如果不存在则返回default
+            配置值
 
         Examples:
-            >>> config.get('ibkr', 'ibkr.host')
+            >>> config.get('ibkr.host')
             '127.0.0.1'
-            >>> config.get('ibkr', 'ibkr.port', 7497)
-            4001
+            >>> config.get('database.postgres.port')
+            5432
         """
-        # 加载配置
-        config = self.load(name)
+        keys = key.split(".")
+        value = self._config
 
-        # 按点分隔路径遍历
-        keys = key_path.split('.')
-        value = config
-
-        for key in keys:
-            if isinstance(value, dict) and key in value:
-                value = value[key]
+        for k in keys:
+            if isinstance(value, dict) and k in value:
+                value = value[k]
             else:
                 return default
 
         return value
 
-    def reload(self, name: str) -> Dict[str, Any]:
-        """重新加载配置文件
+    def _set_nested(self, key: str, value: Any):
+        """设置嵌套配置值"""
+        keys = key.split(".")
+        current = self._config
 
-        清除缓存并重新从文件加载。
+        for k in keys[:-1]:
+            if k not in current:
+                current[k] = {}
+            current = current[k]
+
+        current[keys[-1]] = value
+
+    def get_section(self, section: str) -> dict:
+        """
+        获取配置节
 
         Args:
-            name: 配置文件名（不含.yaml后缀）
+            section: 配置节名称
 
         Returns:
-            新加载的配置字典
+            配置节字典
         """
-        if name in self._configs:
-            del self._configs[name]
-        return self.load(name)
+        return self._config.get(section, {})
 
-    def clear_cache(self):
-        """清除所有配置缓存"""
-        self._configs.clear()
+    def load(self, name: str) -> dict:
+        """
+        兼容旧的 config.load() 方法
+
+        Args:
+            name: 配置节名称
+
+        Returns:
+            配置节字典
+        """
+        return self.get_section(name)
+
+    def reload(self):
+        """重新加载配置"""
+        self._load_config()
 
 
 # 全局配置实例

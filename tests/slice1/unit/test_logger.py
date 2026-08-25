@@ -1,7 +1,9 @@
-
 """测试日志系统"""
 
+from pathlib import Path
+
 from common.logger import log
+
 
 def test_logger_basic():
     """测试基本日志输出"""
@@ -11,6 +13,7 @@ def test_logger_basic():
     log.error("This is an error message")
 
     print("Logger basic test completed")
+
 
 def test_logger_file_creation():
     """测试日志文件是否创建"""
@@ -27,6 +30,7 @@ def test_logger_file_creation():
     print(f"Found {len(log_files)} log files")
     print("Log file creation test passed")
 
+
 def test_logger_error_file():
     """测试错误日志单独文件"""
     log.error("This is a test error message")
@@ -39,7 +43,8 @@ def test_logger_error_file():
     print(f"Found {len(error_files)} error log files")
     print("Error log file test completed")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     test_logger_basic()
     test_logger_file_creation()
     test_logger_error_file()

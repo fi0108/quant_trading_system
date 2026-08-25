@@ -1,0 +1,45 @@
+# 风控配置文件
+
+# 持仓风控
+position:
+  # 单只股票持仓上限
+  max_single_position:
+    enabled: true
+    max_quantity: 10000        # 最大持仓数量
+    max_value: 100000          # 最大持仓市值（美元）
+
+  # 总持仓上限
+  max_total_position:
+    enabled: true
+    max_total_value: 500000    # 总持仓市值上限（美元）
+
+  # 持仓集中度
+  position_concentration:
+    enabled: true
+    max_concentration: 0.3     # 单只最大占比30%
+
+# 订单风控
+order:
+  # 单笔订单金额上限
+  max_order_value:
+    enabled: true
+    max_order_value: 50000     # 单笔最大金额（美元）
+
+  # 单日交易次数限制
+  daily_trades_limit:
+    enabled: true
+    max_daily_trades: 100      # 全部标的每日最大交易次数
+    max_symbol_daily_trades: 20 # 单只标的每日最大交易次数
+
+  # 频繁交易检测
+  trading_frequency:
+    enabled: true
+    time_window: 60            # 时间窗口（秒）
+    max_symbol_frequency: 5    # 窗口内单只最大交易次数
+    max_total_frequency: 10    # 窗口内全部最大交易次数
+
+# 全局设置
+global:
+  strict_mode: false           # 严格模式：任何风控失败都拒绝
+  log_all_checks: false        # 记录所有检查（包括通过的）
+  alert_on_rejection: true     # 风控拒绝时发送告警

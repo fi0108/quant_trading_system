@@ -9,9 +9,9 @@ Manages IB Gateway scheduled restart window:
 """
 
 from datetime import datetime, time, timedelta
-from typing import Optional, Callable
-import pytz
+from typing import Callable, Optional
 
+import pytz
 from core.timezone_manager import TimezoneManager
 
 
@@ -23,7 +23,7 @@ class RestartWindow:
         scheduled_time: time = time(3, 0, 0),
         window_minutes: int = 30,
         prepare_minutes: int = 10,
-        timezone: str = "America/New_York"
+        timezone: str = "America/New_York",
     ):
         """
         Initialize restart window.
@@ -175,11 +175,7 @@ class GatewayRestartHandler:
     - Handle post-restart recovery
     """
 
-    def __init__(
-        self,
-        restart_window: RestartWindow,
-        timezone_manager: TimezoneManager
-    ):
+    def __init__(self, restart_window: RestartWindow, timezone_manager: TimezoneManager):
         """
         Initialize restart handler.
 
@@ -230,12 +226,12 @@ class GatewayRestartHandler:
         if self.restart_window.is_in_restart_window(current_time):
             if not self._in_restart_window:
                 self._enter_restart_window(current_time)
-            return 'restarting'
+            return "restarting"
 
         elif self.restart_window.is_in_prepare_period(current_time):
             if not self._in_prepare_mode:
                 self._enter_prepare_mode(current_time)
-            return 'prepare'
+            return "prepare"
 
         else:
             # Normal operation or past window
@@ -243,10 +239,10 @@ class GatewayRestartHandler:
                 if self.restart_window.is_past_restart_window(current_time):
                     if self._in_restart_window:
                         self._exit_restart_window(current_time)
-                    return 'past_window'
+                    return "past_window"
                 self._reset_state()
 
-            return 'normal'
+            return "normal"
 
     def should_suppress_alert(self, disconnect_time: datetime) -> bool:
         """
@@ -343,24 +339,24 @@ class GatewayRestartHandler:
         current_time = self.tz_manager.now_utc()
 
         return {
-            'is_preparing': self.is_preparing,
-            'is_restarting': self.is_restarting,
-            'current_status': self.check_restart_status(current_time),
-            'restart_window': {
-                'scheduled_time': self.restart_window.scheduled_time.strftime('%H:%M:%S'),
-                'window_minutes': self.restart_window.window_minutes,
-                'prepare_minutes': self.restart_window.prepare_minutes
+            "is_preparing": self.is_preparing,
+            "is_restarting": self.is_restarting,
+            "current_status": self.check_restart_status(current_time),
+            "restart_window": {
+                "scheduled_time": self.restart_window.scheduled_time.strftime("%H:%M:%S"),
+                "window_minutes": self.restart_window.window_minutes,
+                "prepare_minutes": self.restart_window.prepare_minutes,
             },
-            'time_until_prepare': (
+            "time_until_prepare": (
                 self.restart_window.get_time_until_prepare(current_time).total_seconds()
                 if self.restart_window.get_time_until_prepare(current_time)
                 else None
             ),
-            'time_until_window_end': (
+            "time_until_window_end": (
                 self.restart_window.get_time_until_window_end(current_time).total_seconds()
                 if self.restart_window.get_time_until_window_end(current_time)
                 else None
             ),
-            'last_restart_start': self._restart_start_time,
-            'last_restart_end': self._restart_end_time
+            "last_restart_start": self._restart_start_time,
+            "last_restart_end": self._restart_end_time,
         }

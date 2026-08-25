@@ -12,6 +12,7 @@ Automatically detects Daylight Saving Time (DST) transitions.
 from datetime import datetime, time, timedelta
 from typing import Optional, Tuple
 from zoneinfo import ZoneInfo
+
 import pytz
 
 
@@ -30,7 +31,7 @@ class TimezoneManager:
         market_timezone: str = "America/New_York",
         local_timezone: str = "Asia/Shanghai",
         regular_start: time = time(9, 30),
-        regular_end: time = time(16, 0)
+        regular_end: time = time(16, 0),
     ):
         """
         Initialize timezone manager.
@@ -188,11 +189,7 @@ class TimezoneManager:
         offset_seconds = dt.utcoffset().total_seconds()
         return int(offset_seconds / 3600)
 
-    def is_trading_time(
-        self,
-        dt: Optional[datetime] = None,
-        session: str = "regular"
-    ) -> bool:
+    def is_trading_time(self, dt: Optional[datetime] = None, session: str = "regular") -> bool:
         """
         Check if given time falls within trading hours.
 
@@ -236,19 +233,13 @@ class TimezoneManager:
         # If before market open today, return today's open
         if market_time.time() < self.regular_start:
             next_open = market_time.replace(
-                hour=self.regular_start.hour,
-                minute=self.regular_start.minute,
-                second=0,
-                microsecond=0
+                hour=self.regular_start.hour, minute=self.regular_start.minute, second=0, microsecond=0
             )
         else:
             # Otherwise return next day's open
             next_day = market_time + timedelta(days=1)
             next_open = next_day.replace(
-                hour=self.regular_start.hour,
-                minute=self.regular_start.minute,
-                second=0,
-                microsecond=0
+                hour=self.regular_start.hour, minute=self.regular_start.minute, second=0, microsecond=0
             )
 
         return next_open.astimezone(self.utc_tz)
@@ -271,27 +262,18 @@ class TimezoneManager:
         # If before market close today, return today's close
         if market_time.time() < self.regular_end:
             next_close = market_time.replace(
-                hour=self.regular_end.hour,
-                minute=self.regular_end.minute,
-                second=0,
-                microsecond=0
+                hour=self.regular_end.hour, minute=self.regular_end.minute, second=0, microsecond=0
             )
         else:
             # Otherwise return next day's close
             next_day = market_time + timedelta(days=1)
             next_close = next_day.replace(
-                hour=self.regular_end.hour,
-                minute=self.regular_end.minute,
-                second=0,
-                microsecond=0
+                hour=self.regular_end.hour, minute=self.regular_end.minute, second=0, microsecond=0
             )
 
         return next_close.astimezone(self.utc_tz)
 
-    def get_trading_day_bounds(
-        self,
-        date: Optional[datetime] = None
-    ) -> Tuple[datetime, datetime]:
+    def get_trading_day_bounds(self, date: Optional[datetime] = None) -> Tuple[datetime, datetime]:
         """
         Get start and end of trading day in UTC.
 
@@ -307,23 +289,14 @@ class TimezoneManager:
         market_time = self.utc_to_market(date)
 
         open_time = market_time.replace(
-            hour=self.regular_start.hour,
-            minute=self.regular_start.minute,
-            second=0,
-            microsecond=0
+            hour=self.regular_start.hour, minute=self.regular_start.minute, second=0, microsecond=0
         )
 
         close_time = market_time.replace(
-            hour=self.regular_end.hour,
-            minute=self.regular_end.minute,
-            second=0,
-            microsecond=0
+            hour=self.regular_end.hour, minute=self.regular_end.minute, second=0, microsecond=0
         )
 
-        return (
-            open_time.astimezone(self.utc_tz),
-            close_time.astimezone(self.utc_tz)
-        )
+        return (open_time.astimezone(self.utc_tz), close_time.astimezone(self.utc_tz))
 
     def get_current_session(self, dt: Optional[datetime] = None) -> str:
         """
@@ -343,19 +316,19 @@ class TimezoneManager:
 
         # Pre-market: 04:00-09:30 ET
         if time(4, 0) <= current_time < time(9, 30):
-            return 'pre_market'
+            return "pre_market"
 
         # Regular: 09:30-16:00 ET
         elif time(9, 30) <= current_time < time(16, 0):
-            return 'regular'
+            return "regular"
 
         # After-hours: 16:00-20:00 ET
         elif time(16, 0) <= current_time < time(20, 0):
-            return 'after_hours'
+            return "after_hours"
 
         # Closed: 20:00-04:00 ET (next day)
         else:
-            return 'closed'
+            return "closed"
 
     def format_dual_timezone(self, dt: datetime) -> str:
         """
@@ -372,7 +345,4 @@ class TimezoneManager:
 
         tz_abbr = "EDT" if self.is_dst(market_time) else "EST"
 
-        return (
-            f"{market_time.strftime('%Y-%m-%d %H:%M:%S')} {tz_abbr} / "
-            f"{local_time.strftime('%H:%M:%S')} CST"
-        )
+        return f"{market_time.strftime('%Y-%m-%d %H:%M:%S')} {tz_abbr} / " f"{local_time.strftime('%H:%M:%S')} CST"

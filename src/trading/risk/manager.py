@@ -40,7 +40,7 @@ class RiskManager:
             # 查找可用现金
             cash = 0.0
             for item in account_values:
-                if item.tag == 'AvailableFunds':
+                if item.tag == "AvailableFunds":
                     cash = float(item.value)
                     break
 
